@@ -5,7 +5,7 @@ theme: gaia
 color: #333
 backgroundColor: #fff
 backgroundImage: url('./img/hero-background.jpg')
-footer: PL/SQL - Michael Stenz
+footer: PL/SQL - Michael Stenz - 27.11.2024
 _footer: ""
 paginate: true
 _paginate: false
@@ -328,12 +328,245 @@ END LOOP;
 ---
 
 <div style="display: flex; justify-content: center; flex-direction: column; height: 70%">
-<h1>Cursor</h1>
+<h1>Cursors</h1>
 </div>
+
+---
+
+# Cursor
+
+Ein Cursor verwaltet den Zugriff auf einen Datensatz (ergebnis eines Select-Statements)
+- 2 Arten:
+  - Implitit: DML-Statements die nur eine Zeile returnen
+  - Explicit: Queries die mehrere Zeilen returnen
+---
+
+# Cursor
+
+- PL/SQL öffnet einen Cursor
+- SQL-Statement wird ausgeführt
+- PL/SQL schließt den Cursor
+- Variable für current row
+
+![bg right:60% 95%](./img/cursor.png)
+
+---
+
+# Cursor
+```sql
+DECLARE
+  CURSOR c1 IS SELECT ename, job FROM emp;
+    my_ename emp.ename%TYPE;
+    my_job emp.job%TYPE;
+BEGIN
+  OPEN c1; -- ???
+  -- ???
+  FETCH c1 INTO my_ename, my_job;
+  CLOSE c1; -- ???
+END;
+```
+---
+
+# Cursor
+```sql
+DECLARE
+  CURSOR c1 IS SELECT ename, job FROM emp;
+    my_ename emp.ename%TYPE;
+    my_job emp.job%TYPE;
+BEGIN
+  OPEN c1; -- Führt das Select-Statement aus
+  -- ???
+  FETCH c1 INTO my_ename, my_job; 
+  CLOSE c1; -- ???
+END;
+```
+---
+
+# Cursor
+```sql
+DECLARE
+  CURSOR c1 IS SELECT ename, job FROM emp;
+    my_ename emp.ename%TYPE;
+    my_job emp.job%TYPE;
+BEGIN
+  OPEN c1; -- Führt das Select-Statement aus
+  -- Setzt Cursor auf nächste Zeile & holt current row aus dem Puffer
+  FETCH c1 INTO my_ename, my_job; 
+  CLOSE c1; -- ???
+END;
+```
+---
+
+# Cursor
+```sql
+DECLARE
+  CURSOR c1 IS SELECT ename, job FROM emp;
+    my_ename emp.ename%TYPE;
+    my_job emp.job%TYPE;
+BEGIN
+  OPEN c1; -- Führt das Select-Statement aus
+  -- Setzt Cursor auf nächste Zeile & holt current row aus dem Puffer
+  FETCH c1 INTO my_ename, my_job;
+  CLOSE c1; -- Schließt den Cursor
+END;
+```
+---
+
+# Cursor mit Parameter
+
+```sql
+DECLARE
+CURSOR c_product (low_price NUMBER, high_price NUMBER)
+    IS
+        SELECT *
+        FROM products
+        WHERE price BETWEEN low_price AND high_price;
+  BEGIN
+    OPEN c_product(100, 200);
+    -- Statements
+    CLOSE c_product;
+END;
+```
+
+---
+
+# Wichtige Cursor Attribute
+Attribut | return type |                  Amount                   
+-----|-------------|:-----------------------------------------:
+%FOUND | Booolean    | Wenn letztes Fetch eine Zeile Zurückgiebt |
+%NOTFOUND | Boolean     |                 Gegenteil                 |
+%ISOPEN | Boolean     |       Ob der Cursor noch offen ist        |
+%ROWCOUNT | number      |         Anzahl an gefetchten Rows         |
+
+---
+
+# Cursor-FOR-Loop
+Automatisches offnen, fetchen, schließen und loopen
+```sql
+DECLARE
+    CURSOR c1 IS SELECT ename, job FROM emp;
+BEGIN
+    FOR emp_rec IN c1 LOOP
+        dbms_output.put_line(emp_rec.ename || ' ' || emp_rec.job);
+    END LOOP;
+END;
+```
+---
+
+# Cursor-Variablen
 
 
 ---
 
+<div style="display: flex; justify-content: center; flex-direction: column; height: 70%">
+<h1>Procedures, Functions, Package, Trigger, Jobs...</h1>
+</div>
+
+---
+
+### Gruppen
+
+- Aufrufgesteuert 
+  * Procedure -> Kein Rückgabewert
+  * Function -> Rückgabewert
+- Aktionsgesteuert
+  * Trigger -> durch DML, DDL oder DB operations "getriggergt"
+- Zeitgesteuert
+  * Jobs -> Zeitgesteuerte Aufgaben
+<!-- - Packages -> Sammlung von Prozeduren, Funktionen, Variablen, Cursor, Exceptions
+-->
+---
+
+# Procedure
+- Kein Rückgabewert
+- Mittels **CALL**, **EXECUTE** oder anonymen Block aufrufen (ACHTUNG: Execute funktioniert nur in SQL\*Plus oder SQL Developer)
+```sql
+CREATE [OR REPLACE] PROCEDURE proc_name [(param_list)] IS
+  [lokale Deklarationen]
+BEGIN
+  ...
+[EXCEPTION
+  ...]
+END;
+```
+
+---
+
+# Function
+- Rückgabewert
+- Kann Parameter haben
+
+---
+
+# Parameter
+**Syntax**: \<name> \<modus> \<datentyp>
+**Typen**: Grundtypen ohne Größenangaben
+**Modi**:
+| Mode | Description |
+|:------|-------------|
+| IN   | übergibt den Wert (call by value)   |
+| OUT  | gibt Werte von einer Prozedur zurück (call by reference) |
+| IN OUT | übergibt den Wert und kann geändert werden (call by reference) |
+
+---
+
+#### IN/OUT Example
+
+```sql
+CREATE OR REPLACE PROCEDURE format_phone
+           (p_phone_no IN OUT VARCHAR2 ) IS
+BEGIN
+          p_phone_no := '('  || SUBSTR (p_phone_no,1,3) ||
+                        ') ' || SUBSTR (p_phone_no,4,3) ||
+                        '-'  || SUBSTR (p_phone_no,7);
+END format_phone;
+---------
+DECLARE
+  v_phone_no VARCHAR2(10) := '+431234567';
+BEGIN
+  format_phone(v_phone_no);
+  DBMS_OUTPUT.PUT_LINE(v_phone_no); -- (+43) 123-4567
+END;
+```
+
+---
+
+
+<div style="display: flex; justify-content: center; flex-direction: column; height: 70%">
+<h1>Exceptions/Errors</h1>
+</div>
+
+---
+
+```sql
+
+
+
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(' _________  ___  ___  ________  ________   ___  __             ___    ___ ________  ___  ___     ');
+    DBMS_OUTPUT.PUT_LINE('|\___   ___\\  \|\  \|\   __  \|\   ___  \|\  \|\  \          |\  \  /  /|\   __  \|\  \|\  \    ');
+    DBMS_OUTPUT.PUT_LINE('\|___ \  \_\ \  \\\  \ \  \|\  \ \  \\ \  \ \  \/  /|_        \ \  \/  / | \  \|\  \ \  \\\  \   ');   
+    DBMS_OUTPUT.PUT_LINE('     \ \  \ \ \   __  \ \   __  \ \  \\ \  \ \   ___  \        \ \    / / \ \  \\\  \ \  \\\  \  ');   
+    DBMS_OUTPUT.PUT_LINE('      \ \  \ \ \  \ \  \ \  \ \  \ \  \\ \  \ \  \\ \  \        \/  /  /   \ \  \\\  \ \  \\\  \ ');   
+    DBMS_OUTPUT.PUT_LINE('       \ \__\ \ \__\ \__\ \__\ \__\ \__\\ \__\ \__\\ \__\     __/  / /      \ \_______\ \_______\');   
+    DBMS_OUTPUT.PUT_LINE('        \|__|  \|__|\|__|\|__|\|__|\|__| \|__|\|__| \|__|    |\___/ /        \|_______|\|_______|');   
+    DBMS_OUTPUT.PUT_LINE('                                                              \|___|/                            ');
+    
+    DBMS_OUTPUT.PUT_LINE('                 ________  ___               ___ ________  ________  ___                         ');
+    DBMS_OUTPUT.PUT_LINE('                 \   __  \|\  \             /  /|\   ____\|\   __  \|\  \                        ');
+    DBMS_OUTPUT.PUT_LINE('                  \  \|\  \ \  \           /  //\ \  \___|\ \  \|\  \ \  \                       ');
+    DBMS_OUTPUT.PUT_LINE('                 \ \   ____\ \  \         /  //  \ \_____  \ \  \\\  \ \  \                      ');
+    DBMS_OUTPUT.PUT_LINE('                  \ \  \___|\ \  \____   /  //    \|____|\  \ \  \\\  \ \  \____                 ');
+    DBMS_OUTPUT.PUT_LINE('                   \ \__\    \ \_______\/_ //       ____\_\  \ \_____  \ \_______\               ');
+    DBMS_OUTPUT.PUT_LINE('                    \|__|     \|_______|__|/       |\_________\|___| \__\|_______|               ');
+    DBMS_OUTPUT.PUT_LINE('                                                   \|_________|     \|__|                        ');
+END;
+
+
+
+
+```
+---
 
 # Quellen
 - https://www.oracle.com/database/technologies/appdev/plsql.html

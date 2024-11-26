@@ -33,7 +33,7 @@ DROP TABLE students;
 
 create table students(
      name varchar(255) primary key,
-     insy_grade number(3,2)
+     insy_grade varchar(255)
 );
 
-insert into students(name, insy_grade) VALUES ('Michi', 1.5);
+insert into students(name, insy_grade) VALUES ('Michi', 'Sehr Gut');
