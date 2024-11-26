@@ -61,7 +61,7 @@ style: |
 - Erweiterung durch 3GL-Elemente (Schleifen, Bedingungen, Prozeduren, Funktionen...)
 - Auslagerung von Code/Business-logic in die Datenbank (Datenintegrität 👍, Keine Redundanz 👍)
 - Vorbereitung und Speicherung Code (Precompiled im Datenbankcache ⚡)
-- Zeit und Aktionsgesteuerte Ausführung (Trigger, Scheduler)
+- Zeit und Aktions gesteuerte Ausführung (Trigger, Scheduler)
 - Komplexe probleme -> einfache sub-programme
 - ...
 
@@ -187,7 +187,7 @@ Deklaration mit %ROWTYPE oder explizit
 # Datentypen
 
 - SQL Types + PL/SQL Types <!-- PL/SQL Datentypen und SQL Datentypen -->
-  - z.B BOOLEAN
+  - z.B BOOLEAN (Demo)
 - Scalar (können subtypes haben)
 - Composite
 - Large Object (LOB)
@@ -288,7 +288,7 @@ END LOOP;
 ---
 
 # Benennung von Schleifen
-Schleifen können bennennt werden um mit **EXIT** oder **CONTINUE** gezielt zu springen.
+Schleifen können benennt werden um mit **EXIT** oder **CONTINUE** gezielt zu springen.
 ```sql
 <<loop1>>
 FOR i IN 1..10 LOOP
@@ -451,10 +451,6 @@ BEGIN
     END LOOP;
 END;
 ```
----
-
-# Cursor-Variablen
-
 
 ---
 
@@ -477,24 +473,39 @@ END;
 -->
 ---
 
-# Procedure
-- Kein Rückgabewert
-- Mittels **CALL**, **EXECUTE** oder anonymen Block aufrufen (ACHTUNG: Execute funktioniert nur in SQL\*Plus oder SQL Developer)
+### Procedures
+- Kein Rückgabewert + Kann Parameter haben
+- Mittels **CALL**, **EXEC** oder **anonymen Block** aufrufbar (**ACHTUNG**: EXEC funktioniert nur in SQL\*Plus oder SQL Developer)
 ```sql
 CREATE [OR REPLACE] PROCEDURE proc_name [(param_list)] IS
   [lokale Deklarationen]
 BEGIN
   ...
-[EXCEPTION
-  ...]
+[EXCEPTION]
 END;
 ```
 
 ---
 
-# Function
-- Rückgabewert
-- Kann Parameter haben
+### Functions
+- Rückgabewert + Kann Parameter haben
+- Mittels **SELECT** oder **PL/SQL** aufrufbar
+- Keine DML-Statements (müssen als procedure definiert werden)
+```sql
+CREATE [OR REPLACE] FUNCTION func_name [(param_list)] RETURN datatype IS
+  [lokale Variablen]
+BEGIN
+  ...
+RETURN var_name; -- für Rückgabewert
+[EXCEPTION]
+END [func_name]
+```
+
+---
+
+# Demo - Fibonacci
+
+[DEMO](./demos/function_procedure_example.sql)
 
 ---
 
@@ -531,10 +542,129 @@ END;
 
 ---
 
+# Trigger
+
+- Auf Schema oder Datenbank Ebene
+- Vor oder Nach DDL/DML-Statements oder DB-operationen
+- Nutzvoll für:
+  - Logging
+  - Datenintegrität
+  - Automatisierung (z.B. Berechnungen)
+  - ...
+
+---
+
+# Trigger Syntax
+
+![bg height:450](./img/create_trigger.gif)
+
+
+---
+
+# Jobs
+Code in Zeitintervallen, Daten... ausführen
+Signatur:
+```sql
+DBMS_JOB.SUBMIT( 
+   job       OUT BINARY_INTEGER,
+   what      IN  VARCHAR2,
+   next_date IN  DATE DEFAULT sysdate,
+   interval  IN  VARCHAR2 DEFAULT 'null',
+   no_parse  IN  BOOLEAN DEFAULT FALSE,
+   instance  IN  BINARY_INTEGER DEFAULT any_instance,
+   force     IN  BOOLEAN DEFAULT FALSE
+);
+```
+
+---
+
+# Packages
+
+- Sammlung von Typen, Stored-Procedures, Stored-Functions
+- Wie Klassen in Java
+- **Package Specification** (Interface) und **Package Body** (Implementation)
+- Modularität slides.md:586👍, Datenkapselung 👍, Performance 👍...
+
+---
+
+# Package - Struktur
+1. Public Variables
+2. Public Procedures
+3. Private Procedures
+4. Private Variables
+5. Local Variables
+
+![bg right width:90%](./img/package.png)
+
+---
+
+# Package - Syntax
+
+Spezifikation
+```sql
+CREATE [OR REPLACE] PACKAGE <package_name>
+IS | AS --Synonym
+  öffentliche typ- und object-deklarationen,
+  unterprogramm-spezifikationen
+END <package_name>;
+```
+
+---
+
+# Package - Syntax
+
+Body
+```sql
+CREATE [OR REPLACE] PACKAGE BODY <package_name>
+IS | AS
+  öffentliche typ- und object-deklarationen,
+  unterprogramm-spezifikationen
+END package_name;
+```
+
+---
 
 <div style="display: flex; justify-content: center; flex-direction: column; height: 70%">
 <h1>Exceptions/Errors</h1>
 </div>
+
+---
+
+# Exceptions
+
+- Named system exceptions (z.B. siehe Image)
+- Unnamed system exceptions
+- Named programmer defined exceptions
+- Unnamed programmer defined exceptions
+
+![bg right:29% height:90%](./img/exceptions.png)
+
+---
+
+# Benutzerdefinierte Exceptions
+
+Error_Number muss im Bereich von –20000 bis –20999 liegen
+
+```sql
+Raise_Application_Error (Error_Number,Error_Text,[Keep_Error_Stack])
+```
+
+---
+
+# Catch Exceptions
+
+Exceptions können im **Exception** Block gefangen werden
+**SQLCODE**/**SQLERRM** geben den letzten Fehlermessage/code zurück
+
+```sql
+...
+EXCEPTION
+  WHEN exception_name1 THEN –– handler sequence_of_statements1
+  WHEN exception_name2 THEN –– another handler sequence_of_statements2
+  ...
+  WHEN OTHERS THEN –– optional handler sequence_of_statements3
+END;
+```
 
 ---
 
