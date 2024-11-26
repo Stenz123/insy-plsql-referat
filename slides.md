@@ -67,6 +67,12 @@ style: |
 
 ---
 
+# Wo es eingesetzt wird:
+
+![bg width:90%](./img/voest.png)
+
+---
+
 # Architektur
 
 - **PL/SQL Engine** -> Komponente von Oracle die PL/SQL Blöcke ausführt
