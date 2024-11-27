@@ -25,7 +25,7 @@ BEGIN
             job        => job_no,
             what       => 'backup_emp_table;',   -- procedure to execute
             next_date  => TRUNC(SYSDATE) + 1,   -- Start tomorrow at midnight
-            interval   => 'TRUNC(SYSDATE) + 1'  -- Run every day at midnight
+            interval   => 'FREQ=HOURLY;'  -- Run every day at midnight
     );
     DBMS_OUTPUT.PUT_LINE('Job Number: ' || job_no);
     COMMIT;

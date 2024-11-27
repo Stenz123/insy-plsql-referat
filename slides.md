@@ -21,9 +21,11 @@ style: |
   }
 ------
 
-<div style="display: flex; justify-content: center; flex-direction: column; height: 70%">
+<div style="display: flex; justify-content: center; flex-direction: column; height: 90%">
 <h1>PL/SQL</h1>
 <h6>Presentation von Michael Stenz</h6>
+<a style="font-size: 1.4rem;" href="https://github.com/Stenz123/insy-plsql-referat">https://github.com/Stenz123/insy-plsql-referat</a>
+<a style="font-size: 1.4rem;" href="https://stenz123.github.io/insy-plsql-referat">https://stenz123.github.io/insy-plsql-referat</a>
 </div>
 
 ![bg right](./img/AppDev_plsql_detailed.svg)
@@ -437,7 +439,7 @@ END;
 ---
 
 # Wichtige Cursor Attribute
-Attribut | return type |                  Amount                   
+Attribut | return type |               Beschreibung                |
 -----|-------------|:-----------------------------------------:
 %FOUND | Booolean    | Wenn letztes Fetch eine Zeile Zurückgiebt |
 %NOTFOUND | Boolean     |                 Gegenteil                 |
@@ -589,7 +591,7 @@ DBMS_JOB.SUBMIT(
 - Sammlung von Typen, Stored-Procedures, Stored-Functions
 - Wie Klassen in Java
 - **Package Specification** (Interface) und **Package Body** (Implementation)
-- Modularität slides.md:586👍, Datenkapselung 👍, Performance 👍...
+- Modularität 👍, Datenkapselung 👍, Performance 👍...
 
 ---
 
